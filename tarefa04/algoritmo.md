@@ -2,9 +2,11 @@
 Descreva em português um algoritmo para resolver o problema descrito na tarefa.
 
 ## Conjunto de Instruções #
-Uma vez que as entradas e saídas válidas já foram descritas precisamente no enunciado da questão, falta apenas descrever um conjunto de instruções a partir do qual o algoritmo será construído. Para isso, o operador deve ser capaz de:
+Uma vez que as entradas e saídas válidas já foram descritas precisamente no enunciado da questão, falta apenas descrever um conjunto de instruções a partir do qual o algoritmo será construído. Para isso, o operador deve ser capaz de: 
+
 1. Despejar água de um balde para outro até completar sua capacidade.
 2. Entregar um balde.
+
 
 ## Algoritmo #
 
