@@ -6,13 +6,13 @@ lista_b = input().split()
 saida = ""
 
 def eliminar_elementos_repetidos(lista):
-    k = len(lista) - 1
+    k = 0
     nova_lista = []
-    while k >= 0:
+    while k < len(lista):
         if lista[k] not in lista[:k]:
             nova_lista.append(lista[k])
-        k -= 1
-    return nova_lista[-1::-1]
+        k += 1
+    return nova_lista
 
 lista_a = eliminar_elementos_repetidos(lista_a)
 lista_b = eliminar_elementos_repetidos(lista_b)
