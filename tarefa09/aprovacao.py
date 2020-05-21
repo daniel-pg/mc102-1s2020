@@ -14,17 +14,12 @@ def ler_lista_notas() -> list:
     """
 
     lista_notas = input().split()
-    pular_elemento = True
+    nova_lista = []
 
-    for nota in lista_notas:
-        if pular_elemento:
-            pular_elemento = False
-            continue
-        else:
-            pular_elemento = True
-            lista_notas.append(nota)
+    for i in range(1, len(lista_notas), 2):
+        nova_lista.append(lista_notas[i])
 
-    return lista_notas
+    return nova_lista
 
 
 def ler_lista_presenca() -> list:
@@ -50,9 +45,11 @@ def ler_lista_presenca() -> list:
     return lista_presenca
 
 
-def main():
-    lista_notas = ler_lista_notas()
-    lista_presenca = ler_lista_presenca()
+def verifica_aprovacao(lista_presenca: list, lista_notas: list) -> bool:
+    """
+    Recebe a lista de presença com valores True para presença e False para uma falta, e uma lista de notas de A a D de
+    um aluno. Se o aluno cumprir com os critérios de aprovação, retorna o valor True. Caso contrário, retorna False.
+    """
 
     numero_presencas = 0
 
@@ -63,9 +60,20 @@ def main():
     frequencia = numero_presencas / len(lista_presenca)
 
     if "D" in lista_notas or frequencia < 0.75:
-        print("Reprovadx")
+        return False
     else:
+        return True
+
+
+def main():
+    lista_notas = ler_lista_notas()
+    lista_presenca = ler_lista_presenca()
+    aprovado = verifica_aprovacao(lista_presenca, lista_notas)
+
+    if aprovado:
         print("Aprovadx")
+    else:
+        print("Reprovadx")
 
 
 if __name__ == '__main__':
