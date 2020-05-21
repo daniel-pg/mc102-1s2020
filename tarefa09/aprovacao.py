@@ -1,7 +1,7 @@
 """
 Daniel Paulo Garcia © 2020
 
-primos.py
+aprovacao.py
 
 Descrição: Determina se um aluno foi aprovado ou reprovado de acordo com os critérios de avaliação da matéria de MC102.
 """
