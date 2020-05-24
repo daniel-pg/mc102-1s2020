@@ -107,7 +107,7 @@ def carregar_imagem_codificada(nome_do_arquivo: str) -> Tuple[int, int, Codifica
 
 def carregar_imagem_decodificada(nome_do_arquivo: str) -> Tuple[int, int, Imagem]:
     """
-    Carrega uma imagem PBM descomprimida do disco e lê seus conteúdos.
+    Carrega uma imagem PBM decodificada do disco e lê seus conteúdos.
 
     :param nome_do_arquivo: Caminho do arquivo de imagem PBM descomprimido.
     :return: Tupla contendo a largura, altura e seção de dados da imagem.
@@ -138,7 +138,7 @@ def carregar_imagem_decodificada(nome_do_arquivo: str) -> Tuple[int, int, Imagem
 
 def escrever_imagem_codificada(largura: int, altura: int, codificacao: Codificacao, nome_do_arquivo: str) -> None:
     """
-    DOCSTRING
+    Grava uma imagem PBM comprimida com a codificação run-length em um arquivo do disco no caminho especificado.
 
     :param largura: Largura da imagem em pixels
     :param altura: Altura da imagem em pixels
@@ -161,12 +161,12 @@ def escrever_imagem_codificada(largura: int, altura: int, codificacao: Codificac
 
 def escrever_imagem_decodificada(largura: int, altura: int, imagem: Imagem, nome_do_arquivo: str) -> None:
     """
-    DOCSTRING
+    Grava uma imagem PBM decodificada em um arquivo do disco no caminho especificado.
 
     :param largura: Largura da imagem em pixels
     :param altura: Altura da imagem em pixels
     :param imagem: Imagem bitmap monocromática representada por uma matriz de pixels pretos (1s) e brancos (0s)
-    :param nome_do_arquivo: Caminho de onde o arquivo de imagem PBM descomprimido deve ser salvo.
+    :param nome_do_arquivo: Caminho de onde o arquivo de imagem PBM decodificado deve ser salvo.
     :return:
     """
 
