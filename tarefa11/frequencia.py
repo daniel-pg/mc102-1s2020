@@ -10,6 +10,7 @@ palavras-chaves.
 from typing import List, Tuple
 
 ListaDePalavras = List[str]
+PalavrasPorFrequencia = List[Tuple[str, int]]
 
 
 def calcular_quartis(lista: ListaDePalavras):
@@ -18,22 +19,49 @@ def calcular_quartis(lista: ListaDePalavras):
     pass
 
 
-def contar_frequencia():
-    """docstring"""
-    pass
+def contar_freq_palavra(palavra: str, lista: ListaDePalavras) -> int:
+    """Conta a frequência com que uma palavra aparece numa lista de palavras."""
+
+    frequencia = 0
+
+    for elemento in lista:
+        if elemento == palavra:
+            frequencia += 1
+
+    return frequencia
 
 
-def ordenar_por_frequencia(lista_palavras):
-    """docstring"""
+def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFrequencia:
+    """Ordena a lista de palavras em ordem decrescente de frequências. Usa a ordem lexicográfica para casos em que duas
+    palavras aparecem com mesma frequência."""
     lista_sem_repetidos = eliminar_repetidos(lista_palavras)
+    lista_freq = []
 
     for palavra in lista_sem_repetidos:
-        contagem = 0
-        for
+        novo_item = (palavra, contar_freq_palavra(palavra, lista_palavras))
+        lista_freq.append(novo_item)
+
+    for _ in range(len(lista_freq) - 1):
+        # Previne que o algoritmo seja executado até o final caso a lista já esteja ordenada
+        esta_ordenada = True
+
+        for i in range(len(lista_freq) - 1):
+            if lista_freq[i][1] < lista_freq[i + 1][1]:
+                lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
+                esta_ordenada = False
+            elif lista_freq[i][1] == lista_freq[i + 1][1]:
+                if lista_freq[i][0] > lista_freq[i + 1][0]:
+                    lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
+                    esta_ordenada = False
+
+        if esta_ordenada:
+            break
+
+    return lista_freq
 
 
-def eliminar_repetidos(lista: list):
-    """Elimina todos os elementos repetidos de uma lista qualquer."""
+def eliminar_repetidos(lista: ListaDePalavras) -> ListaDePalavras:
+    """Elimina todos os elementos repetidos de uma lista de palavras."""
     lista_sem_repetidos = []
 
     for i in range(len(lista)):
@@ -88,9 +116,12 @@ def ler_entrada() -> ListaDePalavras:
 
 def main():
     palavras = ler_entrada()
+    lista_freq = ordenar_por_frequencia(palavras)
 
     # Imprimir as três palavras mais frequentes, da mais à menos frequente
-    print(palavras[:2])
+    for i in range(2):
+        print(lista_freq[i][0], end=' ')
+    print(lista_freq[2][0])
 
     # Imprimir número de palavras cuja frequência é maior ou igual à da última palavra do primeiro quartil, quando
     # consideramos as palavra da mais à menos frequente. Para determinar o quartil, desconsidere palavras que se repetem
