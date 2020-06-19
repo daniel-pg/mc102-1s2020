@@ -57,7 +57,21 @@ def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFreque
         novo_item = (palavra, contar_freq_palavra(palavra, lista_palavras))
         lista_freq.append(novo_item)
 
-    lista_freq.sort(key=lambda x: x[1], reverse=True)
+    for _ in range(len(lista_freq) - 1):
+        # Previne que o algoritmo seja executado até o final caso a lista já esteja ordenada
+        esta_ordenada = True
+
+        for i in range(len(lista_freq) - 1):
+            if lista_freq[i][1] < lista_freq[i + 1][1]:
+                lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
+                esta_ordenada = False
+            elif lista_freq[i][1] == lista_freq[i + 1][1]:
+                if lista_freq[i][0] > lista_freq[i + 1][0]:
+                    lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
+                    esta_ordenada = False
+
+        if esta_ordenada:
+            break
 
     return lista_freq
 
@@ -79,7 +93,7 @@ def separar_palavras(texto: str, stop_words: ListaDePalavras) -> ListaDePalavras
     """Recebe uma string contendo texto em português e uma lista de stop-words, e devolve uma outra lista com todas as
     palavras do texto, exceto as stop-words."""
     lista_palavras = []
-    pontuacao = (' ', ',', '\n', '.')
+    pontuacao = (' ', ',', '\n', '.', '!', '?', '\'', '\"', '(', ')', '[', ']')
     palavra = ""
 
     for c in range(len(texto)):
@@ -129,20 +143,33 @@ def main():
         print(lista_freq[i][0], end=' ')
     print(lista_freq[2][0])
 
-    # Imprimir número de palavras distintas cuja frequência é maior ou igual à da última palavra do primeiro quartil,
-    # quando consideramos as palavra da mais à menos frequente. Para determinar o quartil, desconsidere palavras que se
-    # repetem menos de 5 vezes.
+    # Imprimir número de palavras distintas cuja frequência é maior ou igual à da palavra do primeiro quartil, quando
+    # consideramos as palavra da mais à menos frequente. Para determinar o quartil, desconsidere palavras que se repetem
+    # menos de 5 vezes ou exatamanente 5 vezes.
     lista2 = []
 
     for el in lista_freq:
-        if el[1] >= 5:
+        if el[1] > 5:
             lista2.append(el)
 
-    calcular_quartis(lista2)
+    q1, q2, q3 = calcular_quartis(lista2)
 
-    # Imprimir três palavras mais frequentes entre aquelas que não foram incluídas na contagem da linha anterior.
+    contagem = 0
+    for el in lista2:
+        if el[1] >= q1:
+            contagem += 1
 
-    # Quando necessário, use a ordem lexicográfica das palavras para resolver empates.
+    print(contagem)
+
+    # Imprimir três palavras mais frequentes entre aquelas que não foram incluídas na contagem da linha anterior, exceto
+    # as palavras que se repetem menos de 5 vezes ou exatamanente 5 vezes.
+    lista3 = []
+
+    for el in lista2:
+        if el[1] < q1:
+            lista3.append(el)
+
+    print(lista3[0][0], lista3[1][0], lista3[2][0],)
 
 
 if __name__ == '__main__':
