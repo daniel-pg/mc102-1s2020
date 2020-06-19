@@ -13,15 +13,31 @@ ListaDePalavras = List[str]
 PalavrasPorFrequencia = List[Tuple[str, int]]
 
 
-def calcular_quartis(lista: ListaDePalavras):
+def calcular_quartis(lista: PalavrasPorFrequencia) -> Tuple[int, int, int]:
     """Calcula os quartis de uma lista de palavras previamente organizada em ordem de frequência em que aparecem no
     texto, com desempate por ordem lexicográfica."""
-    pass
+
+    _N = len(lista)
+
+    q1 = lista[round(0.25 * (_N - 3))][1]
+
+    if _N % 2 == 0:
+        if lista[_N // 2 - 1][0] < lista[_N // 2][0]:
+            q2 = lista[_N // 2 - 1][1]
+        else:
+            q2 = lista[_N // 2][1]
+    else:
+        q2 = lista[round((_N - 1) // 2)][1]
+
+    q3 = lista[round(0.75 * _N - 0.25)][1]
+
+    return q1, q2, q3
 
 
 def contar_freq_palavra(palavra: str, lista: ListaDePalavras) -> int:
     """Conta a frequência com que uma palavra aparece numa lista de palavras."""
 
+    # Função desnecessária se pudesse usar o count() na tarefa...
     frequencia = 0
 
     for elemento in lista:
@@ -41,21 +57,7 @@ def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFreque
         novo_item = (palavra, contar_freq_palavra(palavra, lista_palavras))
         lista_freq.append(novo_item)
 
-    for _ in range(len(lista_freq) - 1):
-        # Previne que o algoritmo seja executado até o final caso a lista já esteja ordenada
-        esta_ordenada = True
-
-        for i in range(len(lista_freq) - 1):
-            if lista_freq[i][1] < lista_freq[i + 1][1]:
-                lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
-                esta_ordenada = False
-            elif lista_freq[i][1] == lista_freq[i + 1][1]:
-                if lista_freq[i][0] > lista_freq[i + 1][0]:
-                    lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
-                    esta_ordenada = False
-
-        if esta_ordenada:
-            break
+    lista_freq.sort(key=lambda x: x[1], reverse=True)
 
     return lista_freq
 
@@ -63,15 +65,17 @@ def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFreque
 def eliminar_repetidos(lista: ListaDePalavras) -> ListaDePalavras:
     """Elimina todos os elementos repetidos de uma lista de palavras."""
     lista_sem_repetidos = []
+    conjunto_elementos = set()
 
-    for i in range(len(lista)):
-        if lista[i] not in lista[:i]:
-            lista_sem_repetidos.append(lista[i])
+    for el in lista:
+        if el not in conjunto_elementos:
+            lista_sem_repetidos.append(el)
+            conjunto_elementos.add(el)
 
     return lista_sem_repetidos
 
 
-def separar_palavras(texto: str, stop_words: ListaDePalavras):
+def separar_palavras(texto: str, stop_words: ListaDePalavras) -> ListaDePalavras:
     """Recebe uma string contendo texto em português e uma lista de stop-words, e devolve uma outra lista com todas as
     palavras do texto, exceto as stop-words."""
     lista_palavras = []
@@ -116,6 +120,8 @@ def ler_entrada() -> ListaDePalavras:
 
 def main():
     palavras = ler_entrada()
+
+    # Existe maneira de fazer isso usando funções do Python, mas como não pode usar...
     lista_freq = ordenar_por_frequencia(palavras)
 
     # Imprimir as três palavras mais frequentes, da mais à menos frequente
@@ -123,9 +129,16 @@ def main():
         print(lista_freq[i][0], end=' ')
     print(lista_freq[2][0])
 
-    # Imprimir número de palavras cuja frequência é maior ou igual à da última palavra do primeiro quartil, quando
-    # consideramos as palavra da mais à menos frequente. Para determinar o quartil, desconsidere palavras que se repetem
-    # menos de 5 vezes.
+    # Imprimir número de palavras distintas cuja frequência é maior ou igual à da última palavra do primeiro quartil,
+    # quando consideramos as palavra da mais à menos frequente. Para determinar o quartil, desconsidere palavras que se
+    # repetem menos de 5 vezes.
+    lista2 = []
+
+    for el in lista_freq:
+        if el[1] >= 5:
+            lista2.append(el)
+
+    calcular_quartis(lista2)
 
     # Imprimir três palavras mais frequentes entre aquelas que não foram incluídas na contagem da linha anterior.
 
