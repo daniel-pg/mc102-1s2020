@@ -1,4 +1,4 @@
-from frequencia import separar_palavras
+from modulo2 import separar_palavras
 
 
 def main():

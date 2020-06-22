@@ -1,8 +1,7 @@
-from frequencia import calcular_quartis
+from modulo2 import calcular_quartis
 
 
 def main():
-    # TODO: No momento esses testes não funcionam, só estão aí de enfeite. Corrigir isso depois.
     teste1 = [('basquete', 11), ('futebol', 9), ('handebol', 8), ('vôlei', 7), ('xadrez', 5), ('tênis', 4),
               ('corrida', 3), ('natação', 1)]
 
