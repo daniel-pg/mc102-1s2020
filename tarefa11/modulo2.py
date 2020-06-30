@@ -33,66 +33,28 @@ def calcular_quartis(lista: PalavrasPorFrequencia) -> Tuple[int, int, int]:
     return q1, q2, q3
 
 
-def contar_freq_palavra(palavra: str, lista: ListaDePalavras) -> int:
-    """Conta a frequência com que uma palavra aparece numa lista de palavras."""
-
-    # Função desnecessária se pudesse usar o count() na tarefa...
-    frequencia = 0
-
-    for elemento in lista:
-        if elemento == palavra:
-            frequencia += 1
-
-    return frequencia
-
-
 def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFrequencia:
     """Ordena a lista de palavras em ordem decrescente de frequências. Usa a ordem lexicográfica para casos em que duas
     palavras aparecem com mesma frequência."""
-    lista_sem_repetidos = eliminar_repetidos(lista_palavras)
-    lista_freq = []
+    dicio_freq = dict()
+    conjunto_elementos = set()
 
-    for palavra in lista_sem_repetidos:
-        novo_item = (palavra, contar_freq_palavra(palavra, lista_palavras))
-        lista_freq.append(novo_item)
+    for el in lista_palavras:
+        if el not in conjunto_elementos:
+            dicio_freq[el] = lista_palavras.count(el)
+            conjunto_elementos.add(el)
 
-    for _ in range(len(lista_freq) - 1):
-        # Previne que o algoritmo seja executado até o final caso a lista já esteja ordenada
-        esta_ordenada = True
-
-        for i in range(len(lista_freq) - 1):
-            if lista_freq[i][1] < lista_freq[i + 1][1]:
-                lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
-                esta_ordenada = False
-            elif lista_freq[i][1] == lista_freq[i + 1][1]:
-                if lista_freq[i][0] > lista_freq[i + 1][0]:
-                    lista_freq[i], lista_freq[i + 1] = lista_freq[i + 1], lista_freq[i]
-                    esta_ordenada = False
-
-        if esta_ordenada:
-            break
+    lista_freq = [(key, lista_palavras.count(key)) for key in dicio_freq.keys()]
+    lista_freq.sort(key=lambda x: (-x[1], x[0]))
 
     return lista_freq
 
 
-def eliminar_repetidos(lista: ListaDePalavras) -> ListaDePalavras:
-    """Elimina todos os elementos repetidos de uma lista de palavras."""
-    lista_sem_repetidos = []
-    conjunto_elementos = set()
-
-    for el in lista:
-        if el not in conjunto_elementos:
-            lista_sem_repetidos.append(el)
-            conjunto_elementos.add(el)
-
-    return lista_sem_repetidos
-
-
-def separar_palavras(texto: str, stop_words: ListaDePalavras = []) -> ListaDePalavras:
-    """Recebe uma string contendo texto em português e uma lista de stop-words, e devolve uma outra lista com todas as
+def separar_palavras(texto: str, stop_words: set = {}) -> ListaDePalavras:
+    """Recebe uma string contendo texto em português e um conjunto de stop-words, e devolve uma outra lista com todas as
     palavras do texto, exceto as stop-words. Caso uma lista de stop-words não seja fornecida, usa uma lista vazia."""
     lista_palavras = []
-    pontuacao = (' ', ',', '\n', '.', '!', '?', '\'', '\"', '(', ')', '[', ']')
+    pontuacao = {' ', ',', '\n', '.', '!', '?', '\'', '\"', '(', ')', '[', ']'}
     palavra = ""
 
     for c in range(len(texto)):

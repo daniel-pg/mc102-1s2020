@@ -24,7 +24,7 @@ def ler_entrada() -> ListaDePalavras:
     arquivo_texto.close()
 
     # Lê stop-words da entrada padrão
-    stop_words = input().split()
+    stop_words = set(input().split())
 
     lista_palavras = separar_palavras(texto, stop_words)
 
