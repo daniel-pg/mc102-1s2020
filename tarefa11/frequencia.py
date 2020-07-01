@@ -7,11 +7,11 @@ Descrição: Conta a frequência com que as palavras aparecem em um arquivo de t
 palavras-chaves.
 """
 
-from modulo2 import ListaDePalavras
-from modulo2 import calcular_quartis, ordenar_por_frequencia, separar_palavras
+from modulo2 import DictPalavrasFrequencias
+from modulo2 import calcular_quartis, ordenar_por_frequencia, contar_palavras
 
 
-def ler_entrada() -> ListaDePalavras:
+def ler_entrada() -> DictPalavrasFrequencias:
     """
     Lê duas linhas de texto da entrada padrão, a primeira contendo o caminho de um arquivo e a segunda uma lista
     separada de stop-words. Devolve uma lista com todas as palavras do texto, exceto as stop-words.
@@ -26,7 +26,7 @@ def ler_entrada() -> ListaDePalavras:
     # Lê stop-words da entrada padrão
     stop_words = set(input().split())
 
-    lista_palavras = separar_palavras(texto, stop_words)
+    lista_palavras = contar_palavras(texto, stop_words)
 
     return lista_palavras
 

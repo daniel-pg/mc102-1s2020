@@ -6,10 +6,16 @@ modulo2.py
 Descrição: Grupo de funções utilizadas pelos scripts frequencia.py e sugestao.py da tarefa 11.
 """
 
-from typing import List, Tuple
+# Import
+from typing import List, Tuple, Dict
 
+# Tipos de variáveis
 ListaDePalavras = List[str]
+DictPalavrasFrequencias = Dict[str, int]
 PalavrasPorFrequencia = List[Tuple[str, int]]
+
+# Constantes
+_PONTUACAO = {' ', ',', '\n', '.', '!', '?', '\'', '\"', '(', ')', '[', ']'}
 
 
 def calcular_quartis(lista: PalavrasPorFrequencia) -> Tuple[int, int, int]:
@@ -33,33 +39,32 @@ def calcular_quartis(lista: PalavrasPorFrequencia) -> Tuple[int, int, int]:
     return q1, q2, q3
 
 
-def ordenar_por_frequencia(lista_palavras: ListaDePalavras) -> PalavrasPorFrequencia:
-    """Ordena a lista de palavras em ordem decrescente de frequências. Usa a ordem lexicográfica para casos em que duas
-    palavras aparecem com mesma frequência."""
-    dicio_freq = dict()
-    conjunto_elementos = set()
+def ordenar_por_frequencia(dicio_freq: DictPalavrasFrequencias) -> PalavrasPorFrequencia:
+    """
+    Recebe um dicionário onde as chaves são palavras e os valores são frequências. Devolve uma lista de tuplas ordenada,
+    onde cada tupla contém uma chave e um valor correspondente ao dicionário da entrada. A lista é organizada
+    primeiramente em ordem decrescente de frequências, e depois pela ordem lexicográfica das palavras.
+    """
 
-    for el in lista_palavras:
-        if el not in conjunto_elementos:
-            dicio_freq[el] = lista_palavras.count(el)
-            conjunto_elementos.add(el)
-
-    lista_freq = [(key, lista_palavras.count(key)) for key in dicio_freq.keys()]
+    lista_freq = [(key, dicio_freq[key]) for key in dicio_freq.keys()]
     lista_freq.sort(key=lambda x: (-x[1], x[0]))
 
     return lista_freq
 
 
-def separar_palavras(texto: str, stop_words: set = {}) -> ListaDePalavras:
+def separar_palavras(texto: str, stop_words: set = None) -> ListaDePalavras:
     """Recebe uma string contendo texto em português e um conjunto de stop-words, e devolve uma outra lista com todas as
-    palavras do texto, exceto as stop-words. Caso uma lista de stop-words não seja fornecida, usa uma lista vazia."""
+    palavras do texto, exceto as stop-words. Caso uma lista de stop-words não seja fornecida, usa um conjunto vazio."""
+
+    if stop_words is None:
+        stop_words = {}
+
     lista_palavras = []
-    pontuacao = {' ', ',', '\n', '.', '!', '?', '\'', '\"', '(', ')', '[', ']'}
     palavra = ""
 
-    for c in range(len(texto)):
+    for char in texto:
 
-        if texto[c] in pontuacao:
+        if char in _PONTUACAO:
             palavra = palavra.lower()
 
             if palavra not in stop_words and palavra:
@@ -68,6 +73,38 @@ def separar_palavras(texto: str, stop_words: set = {}) -> ListaDePalavras:
             palavra = ""
             continue
 
-        palavra += texto[c]
+        palavra += char
 
     return lista_palavras
+
+
+def contar_palavras(texto: str, stop_words: set = None) -> DictPalavrasFrequencias:
+    """
+    Recebe uma string contendo texto em português e um conjunto de stop-words. Devolve um dicionário cujas chaves são
+    todas as palavras do texto exceto as stop-words. Os valores de cada chave são suas respectivas frequências com que
+    aparecem no texto. Caso uma lista de stop-words não seja fornecida, usa um conjunto vazio.
+    """
+
+    if stop_words is None:
+        stop_words = {}
+
+    dicio_freqs = dict()
+    palavra = ""
+
+    for char in texto:
+
+        if char in _PONTUACAO:
+            palavra = palavra.lower()
+
+            if palavra not in stop_words and palavra:
+                if palavra in dicio_freqs:
+                    dicio_freqs[palavra] += 1
+                else:
+                    dicio_freqs[palavra] = 1
+
+            palavra = ""
+            continue
+
+        palavra += char
+
+    return dicio_freqs
