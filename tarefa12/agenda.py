@@ -14,6 +14,9 @@ CSV_DELIMITER = ','
 HEADER = ["id", "nome", "data", "hora", "descricao"]
 QUOTE_CHAR = '"'
 
+# Útil para diminuir a quantidade de mensagens exibidas no terminal durante os testes
+MODO_SILENCIOSO = False
+
 csv.register_dialect("agenda_de_eventos", delimiter=CSV_DELIMITER, quotechar=QUOTE_CHAR)
 
 
@@ -24,7 +27,8 @@ def inicializar_agenda(nome_arquivo: str):
         csv_writer = csv.DictWriter(csv_file, fieldnames=HEADER, dialect="agenda_de_eventos")
         csv_writer.writeheader()
 
-    print(f"Uma agenda vazia '{nome_arquivo}' foi criada!\n")
+    if not MODO_SILENCIOSO:
+        print(f"Uma agenda vazia '{nome_arquivo}' foi criada!\n")
 
 
 def criar_evento(nome_arquivo: str, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
@@ -46,19 +50,18 @@ def criar_evento(nome_arquivo: str, nome_evnt: str, data_evnt: str, hora_evnt: s
         csv_writer = csv.writer(csv_file, dialect="agenda_de_eventos")
         csv_writer.writerow([str(idx), nome_evnt, data_evnt, hora_evnt, descricao_evnt])
 
-    print("Novo evento criado:\n")
-    print("-----------------------------------------------")
-    print(f"Evento {idx} - {nome_evnt}")
-    print(f"Descrição: {descricao_evnt}")
-    print(f"Data: {data_evnt}")
-    print(f"Hora: {hora_evnt}")
-    print("-----------------------------------------------")
+    if not MODO_SILENCIOSO:
+        print("Novo evento criado:\n")
+        print("-----------------------------------------------")
+        imprimir_info_evnt(str(idx), nome_evnt, data_evnt, hora_evnt, descricao_evnt)
 
 
 def alterar_evento(nome_arquivo: str, evento: int, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
     """Altera um evento dado o seu identificador, trocando seus valores antigos pelos novos fornecidos. Caso um novo
     valor não seja fornecido para um campo em específico, mantém o original."""
 
+    # O csv_file.readlines() copia o conteúdo do arquivo pra memória, evitando a necessidade de criar um arquivo
+    # temporário só pra ler/escrever no mesmo arquivo. Isso funciona para arquivos pequenos.
     with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
         csv_reader = csv.reader(csv_file.readlines(), dialect="agenda_de_eventos")
 
@@ -81,15 +84,67 @@ def alterar_evento(nome_arquivo: str, evento: int, nome_evnt: str, data_evnt: st
             else:
                 csv_writer.writerow(row)
 
+    if not MODO_SILENCIOSO:
+        print("Evento alterado:")
+        print("-----------------------------------------------")
+        imprimir_info_evnt(str(evento), nome_evnt, data_evnt, hora_evnt, descricao_evnt)
+
 
 def remover_evento(nome_arquivo: str, evento: int):
-    """docstring"""
-    print(evento)
+    """Remove um evento com o identificador especificado da agenda."""
+
+    with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
+        csv_reader = csv.reader(csv_file.readlines(), dialect="agenda_de_eventos")
+
+    with open(nome_arquivo, mode='w', encoding="UTF-8", newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, dialect="agenda_de_eventos")
+        csv_writer.writerow(HEADER)
+        next(csv_reader)  # Evita a conversão da string "id" do cabeçalho para int
+
+        for row in csv_reader:
+            if int(row[0]) == evento:
+                continue
+            else:
+                csv_writer.writerow(row)
+
+    if not MODO_SILENCIOSO:
+        print(f"O evento {evento} foi removido com sucesso!")
 
 
 def listar_eventos(nome_arquivo: str, data_evnt: str):
-    """docstring"""
-    pass
+    """Lista todos os eventos da agenda para uma data especificada."""
+
+    with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
+        csv_reader = csv.DictReader(csv_file, dialect="agenda_de_eventos")
+        dados = list(csv_reader)
+
+        eventos_listados = []
+
+        if data_evnt is None:
+            # Uma shallow copy deve ser suficiente
+            eventos_listados = dados
+        else:
+            for row in dados:
+                if row.__getitem__("data") == data_evnt:
+                    eventos_listados.append(row)
+
+        if len(eventos_listados) > 0:
+            print(f"Eventos do dia {data_evnt}")
+            print("-----------------------------------------------")
+            for row in eventos_listados:
+                imprimir_info_evnt(row["id"], row["nome"], row["data"], row["hora"], row["descricao"])
+
+        else:
+            print(f"Não existem eventos para o dia {data_evnt}!")
+            return
+
+
+def imprimir_info_evnt(evento: str, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
+    print(f"Evento {evento} - {nome_evnt}")
+    print(f"Descrição: {descricao_evnt}")
+    print(f"Data: {data_evnt}")
+    print(f"Hora: {hora_evnt}")
+    print("-----------------------------------------------")
 
 
 def processar_argumentos():
