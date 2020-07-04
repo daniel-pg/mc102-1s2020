@@ -8,24 +8,78 @@ Descrição: ???
 
 import argparse
 import csv
-import typing
+
+# Constantes
+CSV_DELIMITER = ','
+HEADER = ["id", "nome", "data", "hora", "descricao"]
+QUOTE_CHAR = '"'
+
+csv.register_dialect("agenda_de_eventos", delimiter=CSV_DELIMITER, quotechar=QUOTE_CHAR)
 
 
 def inicializar_agenda(nome_arquivo: str):
     """Cria uma nova agenda vazia e guarda em um arquivo no caminho especificado."""
-    with open(nome_arquivo, mode='w', encoding="UTF-8") as csv_file:
-        csv_writer = csv.writer(csv_file, delimiter=',')
-        csv_writer.writerow(["nome", "descrição", "data", "hora"])
+
+    with open(nome_arquivo, mode='w', encoding="UTF-8", newline='') as csv_file:
+        csv_writer = csv.DictWriter(csv_file, fieldnames=HEADER, dialect="agenda_de_eventos")
+        csv_writer.writeheader()
+
+    print(f"Uma agenda vazia '{nome_arquivo}' foi criada!\n")
 
 
 def criar_evento(nome_arquivo: str, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
-    """docstring"""
-    pass
+    """Cria uma nova entrada na agenda, contendo seu identificador, nome, data, hora e descrição do evento. O número
+    identificador do novo evento será o maior identificador armazenado na agenda mais um, exceto quando a agenda está
+    vazia. Nesse caso o identificador começa a contar do número 1."""
+
+    idx = 1
+
+    with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
+        csv_reader = csv.DictReader(csv_file, dialect="agenda_de_eventos")
+        dados = list(csv_reader)
+
+        if len(dados) > 0:
+            linha_max = max(dados, key=lambda x: int(x.__getitem__(HEADER[0])))
+            idx = int(linha_max.__getitem__(HEADER[0])) + 1
+
+    with open(nome_arquivo, mode='a', encoding="UTF-8", newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, dialect="agenda_de_eventos")
+        csv_writer.writerow([str(idx), nome_evnt, data_evnt, hora_evnt, descricao_evnt])
+
+    print("Novo evento criado:\n")
+    print("-----------------------------------------------")
+    print(f"Evento {idx} - {nome_evnt}")
+    print(f"Descrição: {descricao_evnt}")
+    print(f"Data: {data_evnt}")
+    print(f"Hora: {hora_evnt}")
+    print("-----------------------------------------------")
 
 
 def alterar_evento(nome_arquivo: str, evento: int, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
-    """docstring"""
-    pass
+    """Altera um evento dado o seu identificador, trocando seus valores antigos pelos novos fornecidos. Caso um novo
+    valor não seja fornecido para um campo em específico, mantém o original."""
+
+    with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
+        csv_reader = csv.reader(csv_file.readlines(), dialect="agenda_de_eventos")
+
+    with open(nome_arquivo, mode='w', encoding="UTF-8", newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, dialect="agenda_de_eventos")
+        csv_writer.writerow(HEADER)
+
+        next(csv_reader)
+        for row in csv_reader:
+            if int(row[0]) == evento:
+                if nome_evnt is None:
+                    nome_evnt = row[1]
+                if data_evnt is None:
+                    data_evnt = row[2]
+                if hora_evnt is None:
+                    hora_evnt = row[3]
+                if descricao_evnt is None:
+                    descricao_evnt = row[4]
+                csv_writer.writerow([evento, nome_evnt, data_evnt, hora_evnt, descricao_evnt])
+            else:
+                csv_writer.writerow(row)
 
 
 def remover_evento(nome_arquivo: str, evento: int):
@@ -61,8 +115,8 @@ def processar_argumentos():
         cmd.add_argument("--hora", help="")
         cmd.add_argument("--descricao", help="")
 
-    parser_alterar.add_argument("--evento", help="")
-    parser_remover.add_argument("--evento", help="")
+    parser_alterar.add_argument("--evento", type=int, help="")
+    parser_remover.add_argument("--evento", type=int, help="")
     parser_listar.add_argument("--data", help="")
 
     return parser.parse_args()
