@@ -3,7 +3,8 @@ Daniel Paulo Garcia © 2020
 
 agenda.py
 
-Descrição: ???
+Descrição: Uma pequena aplicação de linha de comando que permite gerenciar arquivos de agenda além de criar, alterar,
+remover e listar eventos dessa agenda.
 """
 
 import argparse
@@ -17,7 +18,7 @@ QUOTE_CHAR = '"'
 # Útil para diminuir a quantidade de mensagens exibidas no terminal durante os testes
 MODO_SILENCIOSO = False
 
-csv.register_dialect("agenda_de_eventos", delimiter=CSV_DELIMITER, quotechar=QUOTE_CHAR)
+csv.register_dialect("agenda_de_eventos", delimiter=CSV_DELIMITER, quotechar=QUOTE_CHAR, skipinitialspace=True)
 
 
 def inicializar_agenda(nome_arquivo: str):
@@ -148,9 +149,11 @@ def imprimir_info_evnt(evento: str, nome_evnt: str, data_evnt: str, hora_evnt: s
 
 
 def processar_argumentos():
-    """docstring"""
+    """Retorna um objeto Namespace do argparse cujos atributos são os argumentos de linha de comando da aplicação, de
+    acordo suas regras de uso."""
+
     parser = argparse.ArgumentParser(description="(inserir nome cafona aqui)! O melhor aplicativo de agenda para linha"
-                                                 "de comando que você jamais verá!")
+                                                 " de comando que você jamais verá!")
     parser.add_argument("-a", "--agenda", required=True, help="Especifica o caminho do arquivo CSV da agenda.")
 
     subparsers = parser.add_subparsers(title="Ação", dest="action",
@@ -165,10 +168,10 @@ def processar_argumentos():
 
     # Argumentos em comum para alguns dos comandos
     for cmd in [parser_inicializar, parser_criar, parser_alterar]:
-        cmd.add_argument("--nome", help="")
-        cmd.add_argument("--data", help="")
-        cmd.add_argument("--hora", help="")
-        cmd.add_argument("--descricao", help="")
+        cmd.add_argument("--nome", help="Nome do evento")
+        cmd.add_argument("--data", help="Data do evento")
+        cmd.add_argument("--hora", help="Horário do evento")
+        cmd.add_argument("--descricao", help="Uma breve descrição do evento")
 
     parser_alterar.add_argument("--evento", type=int, help="")
     parser_remover.add_argument("--evento", type=int, help="")
