@@ -26,8 +26,13 @@ def encontrar_combinacoes(vetor, n, s):
         print()
         return novo_vetor
 
+    elif n == 1 and s > 9:
+        return
+
     else:
-        for k in range(s + 1):
+        inicio = 0 if len(vetor) else 1
+        fim = s + 1 if s <= 9 else 10
+        for k in range(inicio, fim):
             novo_vetor = vetor + (k,)
             encontrar_combinacoes(novo_vetor, n - 1, s - k)
 
