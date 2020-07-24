@@ -16,12 +16,13 @@ def imprimir_arvore(url: str, url_inicial: str, urls_ja_acessadas: set, espacos:
     """
     Dadas uma URL qualquer de um site e a URL de sua respectiva página principal, imprime recursivamente a árvore de
     todos os links acessíveis a partir da página, desde que estejam ou no mesmo diretório ou em subdiretórios da página
-    inicial, e não sejam links externos.
+    inicial, e não sejam links externos ou já acessados previamente. Cada linha da saída é indentada por espaços de
+    acordo com a hierarquia do nó na árvore.
 
-    :param espacos:
+    :param espacos: Quantidade de espaços utilizada para indentar a linha, de acordo com o nível na hierarquia.
     :param urls_ja_acessadas: Conjunto onde serão guardadas strings contendo as URL's que ja foram listadas pela função.
     :param url_inicial: URL da página inicial.
-    :param url: URL a partir da qual será construída a árvore.
+    :param url: URL do primeiro nó, a partir do qual será construída a árvore.
     :return:
     """
 
@@ -40,8 +41,8 @@ def imprimir_arvore(url: str, url_inicial: str, urls_ja_acessadas: set, espacos:
         urls_ja_acessadas.add(url)
 
         for match in matches:
-            url_encontrada = resolver_url(match.group(1), url_inicial)
-            imprimir_arvore(url_encontrada, url, urls_ja_acessadas, espacos + 2)
+            url_encontrada = resolver_url(match.group(1), url)
+            imprimir_arvore(url_encontrada, url_inicial, urls_ja_acessadas, espacos + 2)
 
 
 def main():
