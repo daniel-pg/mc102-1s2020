@@ -9,33 +9,54 @@ remover e listar eventos dessa agenda.
 
 import argparse
 import csv
+import logging
+from typing import List, Dict
+
+EventoAgenda = Dict[str, str]
+Agenda = List[EventoAgenda]
 
 # Constantes
+# TODO: Pensar numa maneira de se livrar das constantes? Ou é apenas das constantes desnecessárias?
 CSV_DELIMITER = ','
 HEADER = ["id", "nome", "data", "hora", "descricao"]
 QUOTE_CHAR = '"'
 
 # Útil para diminuir a quantidade de mensagens exibidas no terminal durante os testes
+# TODO: Mudar todas as mensagens do modo verboso pro logging
 MODO_SILENCIOSO = False
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
 
 csv.register_dialect("agenda_de_eventos", delimiter=CSV_DELIMITER, quotechar=QUOTE_CHAR, skipinitialspace=True)
 
 
 def inicializar_agenda(nome_arquivo: str):
-    """Cria uma nova agenda vazia e guarda em um arquivo no caminho especificado."""
+    """
+    Cria uma nova agenda vazia e guarda em um arquivo no caminho especificado.
 
-    with open(nome_arquivo, mode='w', encoding="UTF-8", newline='') as csv_file:
-        csv_writer = csv.DictWriter(csv_file, fieldnames=HEADER, dialect="agenda_de_eventos")
-        csv_writer.writeheader()
+    :param nome_arquivo:
+    :return:
+    """
 
-    if not MODO_SILENCIOSO:
-        print(f"Uma agenda vazia '{nome_arquivo}' foi criada!\n")
+    agenda = []
+    escrever_arquivo_agenda(nome_arquivo, agenda)
+    root_logger.info(f"Uma agenda vazia '{nome_arquivo}' foi criada!\n")
 
 
 def criar_evento(nome_arquivo: str, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
-    """Cria uma nova entrada na agenda, contendo seu identificador, nome, data, hora e descrição do evento. O número
+    """
+    Cria uma nova entrada na agenda, contendo seu identificador, nome, data, hora e descrição do evento. O número
     identificador do novo evento será o maior identificador armazenado na agenda mais um, exceto quando a agenda está
-    vazia. Nesse caso o identificador começa a contar do número 1."""
+    vazia. Nesse caso o identificador começa a contar do número 1.
+
+    :param nome_arquivo:
+    :param nome_evnt:
+    :param data_evnt:
+    :param hora_evnt:
+    :param descricao_evnt:
+    :return:
+    """
 
     idx = 1
 
@@ -58,8 +79,18 @@ def criar_evento(nome_arquivo: str, nome_evnt: str, data_evnt: str, hora_evnt: s
 
 
 def alterar_evento(nome_arquivo: str, evento: int, nome_evnt: str, data_evnt: str, hora_evnt: str, descricao_evnt: str):
-    """Altera um evento dado o seu identificador, trocando seus valores antigos pelos novos fornecidos. Caso um novo
-    valor não seja fornecido para um campo em específico, mantém o original."""
+    """
+    Altera um evento dado o seu identificador, trocando seus valores antigos pelos novos fornecidos. Caso um novo
+    valor não seja fornecido para um campo em específico, mantém o original.
+
+    :param nome_arquivo:
+    :param evento:
+    :param nome_evnt:
+    :param data_evnt:
+    :param hora_evnt:
+    :param descricao_evnt:
+    :return:
+    """
 
     # O csv_file.readlines() copia o conteúdo do arquivo pra memória, evitando a necessidade de criar um arquivo
     # temporário só pra ler/escrever no mesmo arquivo. Isso funciona para arquivos pequenos.
@@ -92,7 +123,13 @@ def alterar_evento(nome_arquivo: str, evento: int, nome_evnt: str, data_evnt: st
 
 
 def remover_evento(nome_arquivo: str, evento: int):
-    """Remove um evento com o identificador especificado da agenda."""
+    """
+    Remove um evento com o identificador especificado da agenda.
+
+    :param nome_arquivo:
+    :param evento:
+    :return:
+    """
 
     with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
         csv_reader = csv.reader(csv_file.readlines(), dialect="agenda_de_eventos")
@@ -113,7 +150,13 @@ def remover_evento(nome_arquivo: str, evento: int):
 
 
 def listar_eventos(nome_arquivo: str, data_evnt: str):
-    """Lista todos os eventos da agenda para uma data especificada."""
+    """
+    Lista todos os eventos da agenda para uma data especificada.
+
+    :param nome_arquivo:
+    :param data_evnt:
+    :return:
+    """
 
     with open(nome_arquivo, mode='r', encoding="UTF-8", newline='') as csv_file:
         csv_reader = csv.DictReader(csv_file, dialect="agenda_de_eventos")
@@ -148,9 +191,40 @@ def imprimir_info_evnt(evento: str, nome_evnt: str, data_evnt: str, hora_evnt: s
     print("-----------------------------------------------")
 
 
-def processar_argumentos():
-    """Retorna um objeto Namespace do argparse cujos atributos são os argumentos de linha de comando da aplicação, de
-    acordo suas regras de uso."""
+def ler_arquivo_agenda(nome_arquivo: str):
+    """
+    docstring
+
+    :param nome_arquivo:
+    :return:
+    """
+    pass
+
+
+def escrever_arquivo_agenda(nome_arquivo: str, agenda: Agenda) -> None:
+    """
+    docstring
+
+    :param nome_arquivo:
+    :param agenda:
+    :return:
+    """
+
+    with open(nome_arquivo, mode='w', encoding="UTF-8", newline='') as csv_file:
+        csv_writer = csv.DictWriter(csv_file, fieldnames=HEADER, dialect="agenda_de_eventos")
+        csv_writer.writeheader()
+
+        for evento in agenda:
+            csv_writer.writerow(evento)
+
+
+def processar_argumentos() -> argparse.Namespace:
+    """
+    Retorna um objeto Namespace do argparse cujos atributos são os argumentos de linha de comando da aplicação, de
+    acordo suas regras de uso.
+
+    :return:
+    """
 
     parser = argparse.ArgumentParser(description="(inserir nome cafona aqui)! O melhor aplicativo de agenda para linha"
                                                  " de comando que você jamais verá!")
